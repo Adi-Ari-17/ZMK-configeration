@@ -1,0 +1,18 @@
+file_format: "1"
+id: tilps_kb
+name: Tilps KB
+type: shield
+url: ""
+requires:
+  - xiao_ble
+variants:
+  - id: tilps_kb_left
+    features:
+      - keys
+    siblings:
+      - tilps_kb_right
+  - id: tilps_kb_right
+    features:
+      - keys
+    siblings:
+      - tilps_kb_left

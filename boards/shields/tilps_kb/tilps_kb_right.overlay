@@ -1,0 +1,31 @@
+/*
+ * Tilps KB — RIGHT half overlay
+ *
+ * MCU  : XIAO nRF52840
+ * Role : Peripheral (communicates with central over BLE)
+ *
+ * The right PCB is a physical mirror of the left.  To keep the keymap
+ * left-to-right logical, column GPIOs are listed in REVERSE electrical
+ * order so that:
+ *   col-gpios[0] = P0.05 (D5) → innermost right col → combined col 5
+ *   col-gpios[4] = P0.03 (D1) → outermost right col → combined col 9
+ *
+ * Row GPIOs are identical to the left side (same PCB).
+ *
+ * Diode direction: column-to-row (col2row)
+ */
+
+#include "tilps_kb.dtsi"
+
+/* Extend the kscan0 node (defined in tilps_kb.dtsi) with right-side column GPIOs.
+ * Columns are listed in REVERSE electrical order so that the innermost column
+ * (P0.05, closest to centre) maps to logical col 0 of the right half (combined col 5). */
+&kscan0 {
+    col-gpios
+        = <&gpio0  5 GPIO_ACTIVE_HIGH>   /* right Col0 (innermost/thumb) – P0.05 */
+        , <&gpio0  4 GPIO_ACTIVE_HIGH>   /* right Col1                   – P0.04 */
+        , <&gpio0 29 GPIO_ACTIVE_HIGH>   /* right Col2                   – P0.29 */
+        , <&gpio0 28 GPIO_ACTIVE_HIGH>   /* right Col3                   – P0.28 */
+        , <&gpio0  3 GPIO_ACTIVE_HIGH>   /* right Col4 (outermost)       – P0.03 */
+        ;
+};

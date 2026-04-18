@@ -1,0 +1,75 @@
+/*
+ * Tilps KB — shared shield definition
+ *
+ * Hardware:  XIAO nRF52840 (both halves, same PCB mirrored)
+ * Matrix:    5 rows × 5 cols per half (21 keys per half, 42 total)
+ *            Rows   : P1.15 P1.14 P1.13 P1.12 P1.11
+ *            Cols   : P0.03 P0.28 P0.29 P0.04 P0.05
+ *            Diodes : column-to-row (col2row)
+ *
+ * Key layout (42 keys):
+ *  Row 0 :  Q    W    E    R    T  |  Y    U    I    O    P
+ *  Row 1 :  A    S    D    F    G  |  H    J    K    L    ;
+ *  Row 2 :  Z    X    C    V    B  |  N    M    ,    .    /
+ *  Row 3 :  LSft Tab  LCt  LAlt GUI|  Spc  Ret  BSp  Del  RAlt
+ *  Thumb :                   MO(1) |  MO(2)
+ */
+
+#include <dt-bindings/zmk/matrix_transform.h>
+
+/ {
+    chosen {
+        zmk,kscan = &kscan0;
+        zmk,matrix_transform = &default_transform;
+    };
+
+    /*
+     * Combined 5-row × 10-column transform.
+     * Left  half → columns 0-4  (col 0 = outermost, col 4 = innermost)
+     * Right half → columns 5-9  (col 5 = innermost, col 9 = outermost)
+     * Thumb keys: RC(4,4) = left thumb, RC(4,5) = right thumb
+     */
+    default_transform: keymap_transform_0 {
+        compatible = "zmk,matrix-transform";
+        columns = <10>;
+        rows = <5>;
+        map = <
+RC(0,0) RC(0,1) RC(0,2) RC(0,3) RC(0,4)   RC(0,5) RC(0,6) RC(0,7) RC(0,8) RC(0,9)
+RC(1,0) RC(1,1) RC(1,2) RC(1,3) RC(1,4)   RC(1,5) RC(1,6) RC(1,7) RC(1,8) RC(1,9)
+RC(2,0) RC(2,1) RC(2,2) RC(2,3) RC(2,4)   RC(2,5) RC(2,6) RC(2,7) RC(2,8) RC(2,9)
+RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4)   RC(3,5) RC(3,6) RC(3,7) RC(3,8) RC(3,9)
+                                RC(4,4)    RC(4,5)
+        >;
+    };
+
+    /*
+     * Keyboard scan — rows defined here (same on both halves).
+     * Each overlay adds the col-gpios appropriate for that half.
+     * Row GPIOs: P1.15 P1.14 P1.13 P1.12 P1.11 (diode col2row → rows = inputs)
+     */
+    kscan0: kscan {
+        compatible = "zmk,kscan-gpio-matrix";
+        wakeup-source;
+        diode-direction = "col2row";
+
+        row-gpios
+            = <&gpio1 15 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>   /* Row0 – P1.15 */
+            , <&gpio1 14 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>   /* Row1 – P1.14 */
+            , <&gpio1 13 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>   /* Row2 – P1.13 */
+            , <&gpio1 12 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>   /* Row3 – P1.12 */
+            , <&gpio1 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>   /* Row4 – P1.11 (thumb) */
+            ;
+    };
+
+    /*
+     * Battery voltage divider
+     *   VBAT → R1 (805 kΩ) → sense node → R2 (2 MΩ) → GND
+     *   sense pin = P0.02 / AIN0 / ADC channel 0
+     */
+    vbatt: vbatt {
+        compatible = "zmk,battery-voltage-divider";
+        io-channels = <&adc 0>;
+        output-ohms = <2000000>;
+        full-ohms = <2805000>;
+    };
+};

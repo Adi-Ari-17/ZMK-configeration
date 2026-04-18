@@ -1,0 +1,16 @@
+if SHIELD_TILPS_KB_LEFT || SHIELD_TILPS_KB_RIGHT
+
+config ZMK_KEYBOARD_NAME
+    default "Tilps KB"
+
+config ZMK_SPLIT
+    default y
+
+if SHIELD_TILPS_KB_LEFT
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+endif # SHIELD_TILPS_KB_LEFT
+
+endif # SHIELD_TILPS_KB_LEFT || SHIELD_TILPS_KB_RIGHT
